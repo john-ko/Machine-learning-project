@@ -7,8 +7,14 @@ machine learning project for cs-178 winter 16
 - Scipy
 - Scikit-learn
 
-`pip install numpy`
+```bash
+pip install numpy
+```
 
-`sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose`
+```bash
+sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
+```
 
-`pip install -U scikit-learn`
+```bash
+pip install -U scikit-learn
+```
