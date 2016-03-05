@@ -1,3 +1,6 @@
+# example taken from 
+# http://scikit-learn.org/stable/auto_examples/linear_model/plot_ols.html
+
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import datasets, linear_model
