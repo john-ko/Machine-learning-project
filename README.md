@@ -18,3 +18,4 @@ sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython
 ```bash
 pip install -U scikit-learn
 ```
+todo add more
