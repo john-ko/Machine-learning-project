@@ -8,7 +8,6 @@ from sklearn import datasets, linear_model
 # Load the diabetes dataset
 diabetes = datasets.load_diabetes()
 
-
 # Use only one feature
 diabetes_X = diabetes.data[:, np.newaxis, 2]
 
