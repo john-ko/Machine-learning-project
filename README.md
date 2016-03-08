@@ -18,4 +18,10 @@ sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython
 ```bash
 pip install -U scikit-learn
 ```
+
+## running
+```python
+python test-linear-regression.py
+```
+
 todo add more
