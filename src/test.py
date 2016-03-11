@@ -46,7 +46,7 @@ def setup_code(xTrainFile, yTrainFile):
     YvHat = np.zeros((Mv,nBags))
     rforest = [None] * nBags
 
-    maxDepth = 30
+    maxDepth = 40
     lowestMaxDepth = LowestMSE()
     nFeatures = 60
     minParent = 8
@@ -56,21 +56,59 @@ def setup_code(xTrainFile, yTrainFile):
         Xi,Yi = ml.bootstrapData(Xtr,Ytr, M)
 
         rforest[l] = dtree.treeRegress()
-        rforest[l].train(Xi,Yi,maxDepth=30)
+        rforest[l].train(Xi,Yi,maxDepth=maxDepth)
         YtHat[:,l] = rforest[l].predict(Xtr)[:,0] # predict on training data
         YvHat[:,l] = rforest[l].predict(Xte)[:,0]
         mseT = ((Ytr - YtHat[:,0:l].mean(axis=1))**2).mean()
         mseV = ((Yte - YvHat[:,0:l].mean(axis=1))**2).mean()
-        lowestMaxDepth.set(mseV, l, 30, minParent, l)
+        lowestMaxDepth.set(mseV, l, maxDepth, minParent, l)
     
 
     print "Lowest"
     print lowestMaxDepth
     ###########################
+
+def test_run(xTrainFile, yTrainFile):
+    X = np.genfromtxt(xTrainFile,delimiter=",")
+    Y = np.genfromtxt(yTrainFile,delimiter=",")
+    
+    M = X.shape[0]
+
+    #maxDepth
+    ########################
+
+    nBags = 150
+    YHat = np.zeros((M,nBags))
+
+    rforest = [None] * nBags
+
+    maxDepth = 42
+    nFeatures = 91
+    minParent = 8
+
+    for l in range(1,nBags):
+        print "bags", l
+        Xi,Yi = ml.bootstrapData(X,Y, M)
+
+        rforest[l] = dtree.treeRegress()
+        rforest[l].train(Xi,Yi,maxDepth=maxDepth)
+        YHat[:,l] = rforest[l].predict(X)[:,0]
+
+    write_to_kaggle(Y)
+
     
 def write_to_file(x, y):
     fh = open('MSEprogress.txt','a')    # open file for upload
     fh.write('{},{}\n'.format(x,y)) # output each prediction
     fh.close()
 
-setup_code("../../../../Downloads/kaggle.X1.train.txt", "../../../../Downloads/kaggle.Y.train.txt")
+def write_to_kaggle(Y):
+
+    fh = open('kaggle-score.csv', 'w')
+    fh.write('ID,Predictions\n')
+    for i,k in enumerate(Y):
+        fh.write('{},{}\n'.format(i+1,k))
+    fh.close()
+
+
+test_run("../../../../Downloads/kaggle.X1.train.txt", "../../../../Downloads/kaggle.Y.train.txt")
