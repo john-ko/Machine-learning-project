@@ -77,12 +77,12 @@ def test_run(xTrainFile, yTrainFile):
     #maxDepth
     ########################
 
-    nBags = 150
+    nBags = 3
     YHat = np.zeros((M,nBags))
 
     rforest = [None] * nBags
 
-    maxDepth = 42
+    maxDepth = 10
     nFeatures = 91
     minParent = 8
 
@@ -94,7 +94,7 @@ def test_run(xTrainFile, yTrainFile):
         rforest[l].train(Xi,Yi,maxDepth=maxDepth)
         YHat[:,l] = rforest[l].predict(X)[:,0]
 
-    write_to_kaggle(Y)
+    write_to_kaggle(YHat)
 
     
 def write_to_file(x, y):
@@ -110,5 +110,37 @@ def write_to_kaggle(Y):
         fh.write('{},{}\n'.format(i+1,k))
     fh.close()
 
+def _write_to_kaggle(file, Y):
 
-test_run("../../../../Downloads/kaggle.X1.train.txt", "../../../../Downloads/kaggle.Y.train.txt")
+    fh = open(file, 'w')
+    fh.write('ID,Predictions\n')
+    for i,k in enumerate(Y):
+        fh.write('{},{}\n'.format(i+1,k))
+    fh.close()
+
+def run_GTB():
+    from sklearn.ensemble import GradientBoostingRegressor
+    from sklearn.cross_validation import train_test_split
+    from sklearn.metrics import mean_squared_error
+    import numpy as np
+ 
+    print "running me"
+    X = np.genfromtxt("/home/john/Downloads/kaggle.X1.train.txt",delimiter=",") # load the text file
+    Y = np.genfromtxt("/home/john/Downloads/kaggle.Y.train.txt",delimiter=",") 
+    TEST = np.genfromtxt("/home/john/Downloads/kaggle.X1.test.txt",delimiter=",") 
+
+    #depth = 35 # current lowest
+    for depth in [100,135,140,145,150]:
+        est = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max_depth=depth, random_state=0, loss='ls').fit(X, Y)
+        prediction = est.predict(TEST)
+        print 'GTB @ depth ' + str(depth) +" " + str(mean_squared_error(TEST, est.predict(TEST)))
+        _write_to_kaggle('test_' + str(depth) + '.csv', prediction)
+    #best 0.46050957 max_depth = 25
+
+
+
+if __name__ == '__main__':
+    run_GTB()
+
+
+    #test_run("../../../../Downloads/kaggle.X1.train.txt", "../../../../Downloads/kaggle.Y.train.txt")

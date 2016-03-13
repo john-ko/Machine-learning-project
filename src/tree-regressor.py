@@ -13,11 +13,11 @@ def run_tree_regressor():
      
     rng = np.random.RandomState(1)
  
-    for depth in [30,35,40,45]:
-        treeAdaBoost =  AdaBoostRegressor(DecisionTreeRegressor(max_depth=depth),n_estimators=120, random_state=rng)
+    depth = 35 # current lowest
+    for estimators in [130,235,300,345,450]:
+        treeAdaBoost =  AdaBoostRegressor(DecisionTreeRegressor(max_depth=depth),n_estimators=estimators, random_state=rng)
         treeAdaBoost.fit(x_train, y_train)
-        y_predicted = treeAdaBoost.predict(x_test) 
-        print "adabost @ " + depth + ":", treeAdaBoost.score(x_test, y_test)
+        print "adabost estimators @ " + str(estimators) + ":", treeAdaBoost.score(x_test, y_test)
     #best 0.46050957 max_depth = 25
 
 
