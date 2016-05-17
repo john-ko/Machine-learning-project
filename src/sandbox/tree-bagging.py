@@ -71,30 +71,34 @@ def setup_code(xTrainFile, yTrainFile):
 def test_run(xTrainFile, yTrainFile):
     X = np.genfromtxt(xTrainFile,delimiter=",")
     Y = np.genfromtxt(yTrainFile,delimiter=",")
-    
+    TEST = np.genfromtxt("/home/john/Downloads/kaggle.X1.test.txt",delimiter=",") 
     M = X.shape[0]
 
     #maxDepth
     ########################
 
-    nBags = 3
-    YHat = np.zeros((M,nBags))
+    nBags = 125
 
     rforest = [None] * nBags
 
-    maxDepth = 10
-    nFeatures = 91
+    maxDepth = 40
+    nFeatures = 100
     minParent = 8
 
-    for l in range(1,nBags):
+    for l in range(nBags):
         print "bags", l
         Xi,Yi = ml.bootstrapData(X,Y, M)
 
         rforest[l] = dtree.treeRegress()
         rforest[l].train(Xi,Yi,maxDepth=maxDepth)
-        YHat[:,l] = rforest[l].predict(X)[:,0]
 
-    write_to_kaggle(YHat)
+    mTest = TEST.shape[0]
+    predict = np.zeros( (mTest, nBags) )
+    for i in range(nBags):
+        predict[:,i] = rforest[i].predict(TEST).T[0]
+ 
+    predict = predict[:,0]
+    _write_to_kaggle("treebag.csv",predict)
 
     
 def write_to_file(x, y):
@@ -133,14 +137,11 @@ def run_GTB():
     for depth in [100,135,140,145,150]:
         est = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max_depth=depth, random_state=0, loss='ls').fit(X, Y)
         prediction = est.predict(TEST)
-        print 'GTB @ depth ' + str(depth) +" " + str(mean_squared_error(TEST, est.predict(TEST)))
+        print 'GTB @ depth ' + str(depth) +" " + str(mean_squared_error(y_test, est.predict(x_test)))
         _write_to_kaggle('test_' + str(depth) + '.csv', prediction)
     #best 0.46050957 max_depth = 25
 
 
 
 if __name__ == '__main__':
-    run_GTB()
-
-
-    #test_run("../../../../Downloads/kaggle.X1.train.txt", "../../../../Downloads/kaggle.Y.train.txt")
+    test_run("../../../../Downloads/kaggle.X1.train.txt", "../../../../Downloads/kaggle.Y.train.txt")
